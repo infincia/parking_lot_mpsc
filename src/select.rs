@@ -379,23 +379,6 @@ mod tests {
     use std::thread;
     use ::{Select,channel,sync_channel,Sender,Receiver,TryRecvError};
 
-    // Don't use the libstd version so we can pull in the right Select structure
-    // (std::comm points at the wrong one)
-    macro_rules! select {
-        (
-            $($name:pat = $rx:ident.$meth:ident() => $code:expr),+
-        ) => ({
-            let sel = Select::new();
-            $( let mut $rx = sel.handle(&$rx); )+
-            unsafe {
-                $( $rx.add(); )+
-            }
-            let ret = sel.wait();
-            $( if ret == $rx.id() { let $name = $rx.$meth(); $code } else )+
-            { unreachable!() }
-        })
-    }
-
     #[test]
     fn smoke() {
         let (tx1, rx1) = channel::<i32>();
