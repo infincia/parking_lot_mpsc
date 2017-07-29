@@ -16,7 +16,6 @@
 
 // http://www.1024cores.net/home/lock-free-algorithms/queues/unbounded-spsc-queue
 
-use alloc::boxed::Box;
 use std::ptr;
 use std::cell::UnsafeCell;
 
@@ -58,10 +57,10 @@ unsafe impl<T: Send> Sync for Queue<T> { }
 
 impl<T> Node<T> {
     fn new() -> *mut Node<T> {
-        Box::into_raw(box Node {
+        Box::into_raw(Box::new(Node {
             value: None,
             next: AtomicPtr::new(ptr::null_mut::<Node<T>>()),
-        })
+        }))
     }
 }
 

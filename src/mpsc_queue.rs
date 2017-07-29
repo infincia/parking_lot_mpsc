@@ -23,7 +23,6 @@
 
 pub use self::PopResult::*;
 
-use alloc::boxed::Box;
 use std::ptr;
 use std::cell::UnsafeCell;
 
@@ -60,10 +59,10 @@ unsafe impl<T: Send> Sync for Queue<T> { }
 
 impl<T> Node<T> {
     unsafe fn new(v: Option<T>) -> *mut Node<T> {
-        Box::into_raw(box Node {
+        Box::into_raw(Box::new(Node {
             next: AtomicPtr::new(ptr::null_mut()),
             value: v,
-        })
+        }))
     }
 }
 
