@@ -27,8 +27,6 @@
 //! # Examples
 //!
 //! ```rust
-//! #![feature(mpsc_select)]
-//!
 //! # #[macro_use] extern crate parking_lot_mpsc; fn main() {
 //! use parking_lot_mpsc::channel;
 //! use parking_lot_mpsc::Select;
@@ -138,8 +136,6 @@ impl Select {
     /// # Examples
     ///
     /// ```
-    /// #![feature(mpsc_select)]
-    ///
     /// use parking_lot_mpsc::Select;
     ///
     /// let select = Select::new();
