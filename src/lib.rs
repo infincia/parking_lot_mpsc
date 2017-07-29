@@ -280,6 +280,7 @@ use fmt;
 use mem;
 use cell::UnsafeCell;
 use time::{Duration, Instant};
+extern crate parking_lot;
 
 pub use self::select::{Select, Handle};
 use self::select::StartResult;

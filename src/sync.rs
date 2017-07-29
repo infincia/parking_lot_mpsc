@@ -43,7 +43,7 @@ use std::ptr;
 use sync::atomic::{Ordering, AtomicUsize};
 use sync::mpsc::blocking::{self, WaitToken, SignalToken};
 use sync::mpsc::select::StartResult::{self, Installed, Abort};
-use sync::{Mutex, MutexGuard};
+use ::parking_lot::{Mutex, MutexGuard};
 use time::Instant;
 
 const MAX_REFCOUNT: usize = (isize::MAX) as usize;
@@ -126,7 +126,7 @@ fn wait<'a, 'b, T>(lock: &'a Mutex<State<T>>,
     }
     drop(guard);         // unlock
     wait_token.wait();   // block
-    lock.lock().unwrap() // relock
+    lock.lock() // relock
 }
 
 /// Same as wait, but waiting at most until `deadline`.
@@ -143,7 +143,7 @@ fn wait_timeout_receiver<'a, 'b, T>(lock: &'a Mutex<State<T>>,
     }
     drop(guard);         // unlock
     *success = wait_token.wait_max_until(deadline);   // block
-    let mut new_guard = lock.lock().unwrap(); // relock
+    let mut new_guard = lock.lock(); // relock
     if !*success {
         abort_selection(&mut new_guard);
     }
@@ -196,7 +196,7 @@ impl<T> Packet<T> {
     fn acquire_send_slot(&self) -> MutexGuard<State<T>> {
         let mut node = Node { token: None, next: ptr::null_mut() };
         loop {
-            let mut guard = self.lock.lock().unwrap();
+            let mut guard = self.lock.lock();
             // are we ready to go?
             if guard.disconnected || guard.buf.size() < guard.buf.cap() {
                 return guard;
@@ -237,7 +237,7 @@ impl<T> Packet<T> {
     }
 
     pub fn try_send(&self, t: T) -> Result<(), super::TrySendError<T>> {
-        let mut guard = self.lock.lock().unwrap();
+        let mut guard = self.lock.lock();
         if guard.disconnected {
             Err(super::TrySendError::Disconnected(t))
         } else if guard.buf.size() == guard.buf.cap() {
@@ -274,7 +274,7 @@ impl<T> Packet<T> {
     // When reading this, remember that there can only ever be one receiver at
     // time.
     pub fn recv(&self, deadline: Option<Instant>) -> Result<T, Failure> {
-        let mut guard = self.lock.lock().unwrap();
+        let mut guard = self.lock.lock();
 
         let mut woke_up_after_waiting = false;
         // Wait for the buffer to have something in it. No need for a
@@ -308,7 +308,7 @@ impl<T> Packet<T> {
     }
 
     pub fn try_recv(&self) -> Result<T, Failure> {
-        let mut guard = self.lock.lock().unwrap();
+        let mut guard = self.lock.lock();
 
         // Easy cases first
         if guard.disconnected && guard.buf.size() == 0 { return Err(Disconnected) }
@@ -369,7 +369,7 @@ impl<T> Packet<T> {
         }
 
         // Not much to do other than wake up a receiver if one's there
-        let mut guard = self.lock.lock().unwrap();
+        let mut guard = self.lock.lock();
         if guard.disconnected { return }
         guard.disconnected = true;
         match mem::replace(&mut guard.blocker, NoneBlocked) {
@@ -380,7 +380,7 @@ impl<T> Packet<T> {
     }
 
     pub fn drop_port(&self) {
-        let mut guard = self.lock.lock().unwrap();
+        let mut guard = self.lock.lock();
 
         if guard.disconnected { return }
         guard.disconnected = true;
@@ -421,14 +421,14 @@ impl<T> Packet<T> {
     // If Ok, the value is whether this port has data, if Err, then the upgraded
     // port needs to be checked instead of this one.
     pub fn can_recv(&self) -> bool {
-        let guard = self.lock.lock().unwrap();
+        let guard = self.lock.lock();
         guard.disconnected || guard.buf.size() > 0
     }
 
     // Attempts to start selection on this port. This can either succeed or fail
     // because there is data waiting.
     pub fn start_selection(&self, token: SignalToken) -> StartResult {
-        let mut guard = self.lock.lock().unwrap();
+        let mut guard = self.lock.lock();
         if guard.disconnected || guard.buf.size() > 0 {
             Abort
         } else {
@@ -446,7 +446,7 @@ impl<T> Packet<T> {
     //
     // The return value indicates whether there's data on this port.
     pub fn abort_selection(&self) -> bool {
-        let mut guard = self.lock.lock().unwrap();
+        let mut guard = self.lock.lock();
         abort_selection(&mut guard)
     }
 }
@@ -454,7 +454,7 @@ impl<T> Packet<T> {
 impl<T> Drop for Packet<T> {
     fn drop(&mut self) {
         assert_eq!(self.channels.load(Ordering::SeqCst), 0);
-        let mut guard = self.lock.lock().unwrap();
+        let mut guard = self.lock.lock();
         assert!(guard.queue.dequeue().is_none());
         assert!(guard.canceled.is_none());
     }
