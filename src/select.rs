@@ -49,6 +49,25 @@
 
 #![allow(dead_code)]
 
+
+/// Don't use the libstd version so we can pull in the right Select structure
+/// (std::comm points at the wrong one)
+#[macro_export]
+macro_rules! parking_lot_mpsc_select {
+    (
+        $($name:pat = $rx:ident.$meth:ident() => $code:expr),+
+    ) => ({
+        let sel = Select::new();
+        $( let mut $rx = sel.handle(&$rx); )+
+        unsafe {
+            $( $rx.add(); )+
+        }
+        let ret = sel.wait();
+        $( if ret == $rx.id() { let $name = $rx.$meth(); $code } else )+
+        { unreachable!() }
+    })
+}
+
 use fmt;
 
 use std::cell::{Cell, UnsafeCell};
