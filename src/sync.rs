@@ -36,7 +36,6 @@
 pub use self::Failure::*;
 use self::Blocker::*;
 
-use core::intrinsics::abort;
 use core::isize;
 use core::mem;
 use core::ptr;
@@ -358,9 +357,7 @@ impl<T> Packet<T> {
 
         // See comments on Arc::clone() on why we do this (for `mem::forget`).
         if old_count > MAX_REFCOUNT {
-            unsafe {
-                abort();
-            }
+            panic!();
         }
     }
 
