@@ -1,0 +1,7 @@
+[package]
+name = "parking_lot_mpsc"
+version = "0.1.0"
+authors = ["Stephen Oliver <steve@infincia.com>"]
+
+[dependencies]
+parking_lot = "0.2.8"
