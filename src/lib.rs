@@ -1652,10 +1652,10 @@ impl error::Error for RecvTimeoutError {
 
 #[cfg(all(test, not(target_os = "emscripten")))]
 mod tests {
-    use env;
+    use std::env;
     use super::*;
-    use thread;
-    use time::{Duration, Instant};
+    use std::thread;
+    use std::time::{Duration, Instant};
 
     pub fn stress_factor() -> usize {
         match env::var("RUST_TEST_STRESS") {
@@ -1674,7 +1674,7 @@ mod tests {
     #[test]
     fn drop_full() {
         let (tx, _rx) = channel::<Box<isize>>();
-        tx.send(box 1).unwrap();
+        tx.send(Box::new(1)).unwrap();
     }
 
     #[test]
@@ -1682,7 +1682,7 @@ mod tests {
         let (tx, _rx) = channel::<Box<isize>>();
         drop(tx.clone());
         drop(tx.clone());
-        tx.send(box 1).unwrap();
+        tx.send(Box::new(1)).unwrap();
     }
 
     #[test]
@@ -1879,7 +1879,7 @@ mod tests {
         // Testing that the sender cleans up the payload if receiver is closed
         let (tx, rx) = channel::<Box<i32>>();
         drop(rx);
-        assert!(tx.send(box 0).is_err());
+        assert!(tx.send(Box::new(0)).is_err());
     }
 
     #[test]
@@ -1897,7 +1897,7 @@ mod tests {
     #[test]
     fn oneshot_single_thread_send_then_recv() {
         let (tx, rx) = channel::<Box<i32>>();
-        tx.send(box 10).unwrap();
+        tx.send(Box::new(10)).unwrap();
         assert!(*rx.recv().unwrap() == 10);
     }
 
@@ -1958,7 +1958,7 @@ mod tests {
             assert!(*rx.recv().unwrap() == 10);
         });
 
-        tx.send(box 10).unwrap();
+        tx.send(Box::new(10)).unwrap();
     }
 
     #[test]
@@ -2020,7 +2020,7 @@ mod tests {
         for _ in 0..stress_factor() {
             let (tx, rx) = channel::<Box<isize>>();
             let _t = thread::spawn(move|| {
-                tx.send(box 10).unwrap();
+                tx.send(Box::new(10)).unwrap();
             });
             assert!(*rx.recv().unwrap() == 10);
         }
@@ -2038,7 +2038,7 @@ mod tests {
                 if i == 10 { return }
 
                 thread::spawn(move|| {
-                    tx.send(box i).unwrap();
+                    tx.send(Box::new(i)).unwrap();
                     send(tx, i + 1);
                 });
             }
@@ -2333,10 +2333,10 @@ mod tests {
 
 #[cfg(all(test, not(target_os = "emscripten")))]
 mod sync_tests {
-    use env;
-    use thread;
+    use std::env;
+    use std::thread;
     use super::*;
-    use time::Duration;
+    use std::time::Duration;
 
     pub fn stress_factor() -> usize {
         match env::var("RUST_TEST_STRESS") {
@@ -2355,7 +2355,7 @@ mod sync_tests {
     #[test]
     fn drop_full() {
         let (tx, _rx) = sync_channel::<Box<isize>>(1);
-        tx.send(box 1).unwrap();
+        tx.send(Box::new(1)).unwrap();
     }
 
     #[test]
@@ -2565,7 +2565,7 @@ mod sync_tests {
         // Testing that the sender cleans up the payload if receiver is closed
         let (tx, rx) = sync_channel::<Box<i32>>(0);
         drop(rx);
-        assert!(tx.send(box 0).is_err());
+        assert!(tx.send(Box::new(0)).is_err());
     }
 
     #[test]
@@ -2583,7 +2583,7 @@ mod sync_tests {
     #[test]
     fn oneshot_single_thread_send_then_recv() {
         let (tx, rx) = sync_channel::<Box<i32>>(1);
-        tx.send(box 10).unwrap();
+        tx.send(Box::new(10)).unwrap();
         assert!(*rx.recv().unwrap() == 10);
     }
 
@@ -2659,7 +2659,7 @@ mod sync_tests {
             assert!(*rx.recv().unwrap() == 10);
         });
 
-        tx.send(box 10).unwrap();
+        tx.send(Box::new(10)).unwrap();
     }
 
     #[test]
@@ -2721,7 +2721,7 @@ mod sync_tests {
         for _ in 0..stress_factor() {
             let (tx, rx) = sync_channel::<Box<i32>>(0);
             let _t = thread::spawn(move|| {
-                tx.send(box 10).unwrap();
+                tx.send(Box::new(10)).unwrap();
             });
             assert!(*rx.recv().unwrap() == 10);
         }
@@ -2739,7 +2739,7 @@ mod sync_tests {
                 if i == 10 { return }
 
                 thread::spawn(move|| {
-                    tx.send(box i).unwrap();
+                    tx.send(Box::new(i)).unwrap();
                     send(tx, i + 1);
                 });
             }

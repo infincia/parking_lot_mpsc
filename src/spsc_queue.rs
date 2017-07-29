@@ -264,8 +264,8 @@ mod tests {
     fn drop_full() {
         unsafe {
             let q: Queue<Box<_>> = Queue::new(0);
-            q.push(box 1);
-            q.push(box 2);
+            q.push(Box::new(1));
+            q.push(Box::new(2));
         }
     }
 
