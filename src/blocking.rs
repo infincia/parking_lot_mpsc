@@ -33,9 +33,9 @@ pub struct WaitToken {
     inner: Arc<Inner>,
 }
 
-impl !Send for WaitToken {}
+//impl !Send for WaitToken {}
 
-impl !Sync for WaitToken {}
+//impl !Sync for WaitToken {}
 
 pub fn tokens() -> (WaitToken, SignalToken) {
     let inner = Arc::new(Inner {

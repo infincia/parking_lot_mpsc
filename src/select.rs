@@ -71,7 +71,7 @@ struct SelectInner {
     tail: *mut Handle<'static, ()>,
 }
 
-impl !marker::Send for Select {}
+//impl !marker::Send for Select {}
 
 /// A handle to a receiver which is currently a member of a `Select` set of
 /// receivers.  This handle is used to keep the receiver in the set as well as

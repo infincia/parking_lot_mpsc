@@ -331,7 +331,7 @@ pub struct Receiver<T> {
 // is not used to receive non-sendable things.
 unsafe impl<T: Send> Send for Receiver<T> { }
 
-impl<T> !Sync for Receiver<T> { }
+//impl<T> !Sync for Receiver<T> { }
 
 /// An iterator over messages on a [`Receiver`], created by [`iter`].
 ///
@@ -485,7 +485,7 @@ pub struct Sender<T> {
 // is not used to send non-sendable things.
 unsafe impl<T: Send> Send for Sender<T> { }
 
-impl<T> !Sync for Sender<T> { }
+//impl<T> !Sync for Sender<T> { }
 
 /// The sending-half of Rust's synchronous [`sync_channel`] type.
 ///
