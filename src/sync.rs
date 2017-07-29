@@ -36,9 +36,9 @@
 pub use self::Failure::*;
 use self::Blocker::*;
 
-use core::isize;
-use core::mem;
-use core::ptr;
+use std::isize;
+use std::mem;
+use std::ptr;
 
 use sync::atomic::{Ordering, AtomicUsize};
 use sync::mpsc::blocking::{self, WaitToken, SignalToken};

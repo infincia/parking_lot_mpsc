@@ -51,10 +51,10 @@
 
 use fmt;
 
-use core::cell::{Cell, UnsafeCell};
-use core::marker;
-use core::ptr;
-use core::usize;
+use std::cell::{Cell, UnsafeCell};
+use std::marker;
+use std::ptr;
+use std::usize;
 
 use sync::mpsc::{Receiver, RecvError};
 use sync::mpsc::blocking::{self, SignalToken};

@@ -24,8 +24,8 @@
 pub use self::PopResult::*;
 
 use alloc::boxed::Box;
-use core::ptr;
-use core::cell::UnsafeCell;
+use std::ptr;
+use std::cell::UnsafeCell;
 
 use sync::atomic::{AtomicPtr, Ordering};
 

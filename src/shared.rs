@@ -20,8 +20,6 @@
 
 pub use self::Failure::*;
 
-use core::cmp;
-use core::isize;
 
 use cell::UnsafeCell;
 use ptr;
@@ -33,6 +31,8 @@ use sync::mpsc::select::StartResult;
 use sync::{Mutex, MutexGuard};
 use thread;
 use time::Instant;
+use std::cmp;
+use std::isize;
 
 const DISCONNECTED: isize = isize::MIN;
 const FUDGE: isize = 1024;

@@ -23,8 +23,6 @@ pub use self::SelectionResult::*;
 use self::Message::*;
 
 use cell::UnsafeCell;
-use core::cmp;
-use core::isize;
 use ptr;
 use thread;
 use time::Instant;
@@ -33,6 +31,8 @@ use sync::atomic::{AtomicIsize, AtomicUsize, Ordering, AtomicBool};
 use sync::mpsc::Receiver;
 use sync::mpsc::blocking::{self, SignalToken};
 use sync::mpsc::spsc_queue as spsc;
+use std::cmp;
+use std::isize;
 
 const DISCONNECTED: isize = isize::MIN;
 #[cfg(test)]
