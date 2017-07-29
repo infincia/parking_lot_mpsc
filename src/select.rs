@@ -29,7 +29,9 @@
 //! ```rust
 //! #![feature(mpsc_select)]
 //!
+//! # #[macro_use] extern crate parking_lot_mpsc; fn main() {
 //! use parking_lot_mpsc::channel;
+//! use parking_lot_mpsc::Select;
 //!
 //! let (tx1, rx1) = channel();
 //! let (tx2, rx2) = channel();
@@ -37,7 +39,7 @@
 //! tx1.send(1).unwrap();
 //! tx2.send(2).unwrap();
 //!
-//! select! {
+//! parking_lot_mpsc_select! {
 //!     val = rx1.recv() => {
 //!         assert_eq!(val.unwrap(), 1);
 //!     },
@@ -45,6 +47,7 @@
 //!         assert_eq!(val.unwrap(), 2);
 //!     }
 //! }
+//! # }
 //! ```
 
 #![allow(dead_code)]
@@ -130,7 +133,7 @@ impl Select {
     /// Creates a new selection structure. This set is initially empty.
     ///
     /// Usage of this struct directly can sometimes be burdensome, and usage is much easier through
-    /// the `select!` macro.
+    /// the `parking_lot_mpsc_select!` macro.
     ///
     /// # Examples
     ///
@@ -402,22 +405,22 @@ mod tests {
         let (tx1, rx1) = channel::<i32>();
         let (tx2, rx2) = channel::<i32>();
         tx1.send(1).unwrap();
-        select! {
+        parking_lot_mpsc_select! {
             foo = rx1.recv() => { assert_eq!(foo.unwrap(), 1); },
             _bar = rx2.recv() => { panic!() }
         }
         tx2.send(2).unwrap();
-        select! {
+        parking_lot_mpsc_select! {
             _foo = rx1.recv() => { panic!() },
             bar = rx2.recv() => { assert_eq!(bar.unwrap(), 2) }
         }
         drop(tx1);
-        select! {
+        parking_lot_mpsc_select! {
             foo = rx1.recv() => { assert!(foo.is_err()); },
             _bar = rx2.recv() => { panic!() }
         }
         drop(tx2);
-        select! {
+        parking_lot_mpsc_select! {
             bar = rx2.recv() => { assert!(bar.is_err()); }
         }
     }
@@ -430,7 +433,7 @@ mod tests {
         let (_tx4, rx4) = channel::<i32>();
         let (tx5, rx5) = channel::<i32>();
         tx5.send(4).unwrap();
-        select! {
+        parking_lot_mpsc_select! {
             _foo = rx1.recv() => { panic!("1") },
             _foo = rx2.recv() => { panic!("2") },
             _foo = rx3.recv() => { panic!("3") },
@@ -445,7 +448,7 @@ mod tests {
         let (tx2, rx2) = channel::<i32>();
         drop(tx2);
 
-        select! {
+        parking_lot_mpsc_select! {
             _a1 = rx1.recv() => { panic!() },
             a2 = rx2.recv() => { assert!(a2.is_err()); }
         }
@@ -464,12 +467,12 @@ mod tests {
             for _ in 0..20 { thread::yield_now(); }
         });
 
-        select! {
+        parking_lot_mpsc_select! {
             a = rx1.recv() => { assert_eq!(a.unwrap(), 1); },
             _b = rx2.recv() => { panic!() }
         }
         tx3.send(1).unwrap();
-        select! {
+        parking_lot_mpsc_select! {
             a = rx1.recv() => { assert!(a.is_err()) },
             _b = rx2.recv() => { panic!() }
         }
@@ -488,11 +491,11 @@ mod tests {
             rx3.recv().unwrap();
         });
 
-        select! {
+        parking_lot_mpsc_select! {
             a = rx1.recv() => { assert_eq!(a.unwrap(), 1); },
             a = rx2.recv() => { assert_eq!(a.unwrap(), 2); }
         }
-        select! {
+        parking_lot_mpsc_select! {
             a = rx1.recv() => { assert_eq!(a.unwrap(), 1); },
             a = rx2.recv() => { assert_eq!(a.unwrap(), 2); }
         }
@@ -520,7 +523,7 @@ mod tests {
         });
 
         for i in 0..AMT {
-            select! {
+            parking_lot_mpsc_select! {
                 i1 = rx1.recv() => { assert!(i % 2 == 0 && i == i1.unwrap()); },
                 i2 = rx2.recv() => { assert!(i % 2 == 1 && i == i2.unwrap()); }
             }
@@ -543,7 +546,7 @@ mod tests {
         });
 
         tx3.send(()).unwrap();
-        select! {
+        parking_lot_mpsc_select! {
             _i1 = rx1.recv() => {},
             _i2 = rx2.recv() => panic!()
         }
@@ -565,7 +568,7 @@ mod tests {
         });
 
         tx3.send(()).unwrap();
-        select! {
+        parking_lot_mpsc_select! {
             _i1 = rx1.recv() => {},
             _i2 = rx2.recv() => panic!()
         }
@@ -597,7 +600,7 @@ mod tests {
     fn preflight1() {
         let (tx, rx) = channel();
         tx.send(()).unwrap();
-        select! {
+        parking_lot_mpsc_select! {
             _n = rx.recv() => {}
         }
     }
@@ -607,7 +610,7 @@ mod tests {
         let (tx, rx) = channel();
         tx.send(()).unwrap();
         tx.send(()).unwrap();
-        select! {
+        parking_lot_mpsc_select! {
             _n = rx.recv() => {}
         }
     }
@@ -617,7 +620,7 @@ mod tests {
         let (tx, rx) = channel();
         drop(tx.clone());
         tx.send(()).unwrap();
-        select! {
+        parking_lot_mpsc_select! {
             _n = rx.recv() => {}
         }
     }
@@ -694,7 +697,7 @@ mod tests {
         let (tx1, rx1) = channel();
         let (tx2, rx2) = channel();
         let _t = thread::spawn(move|| {
-            select! {
+            parking_lot_mpsc_select! {
                 _n = rx1.recv() => {}
             }
             tx2.send(()).unwrap();
@@ -714,7 +717,7 @@ mod tests {
         rx1.recv().unwrap();
         rx1.recv().unwrap();
         let _t = thread::spawn(move|| {
-            select! {
+            parking_lot_mpsc_select! {
                 _n = rx1.recv() => {}
             }
             tx2.send(()).unwrap();
@@ -733,7 +736,7 @@ mod tests {
         tx1.send(()).unwrap();
         rx1.recv().unwrap();
         let _t = thread::spawn(move|| {
-            select! {
+            parking_lot_mpsc_select! {
                 _n = rx1.recv() => {}
             }
             tx2.send(()).unwrap();
@@ -748,7 +751,7 @@ mod tests {
     fn sync1() {
         let (tx, rx) = sync_channel::<i32>(1);
         tx.send(1).unwrap();
-        select! {
+        parking_lot_mpsc_select! {
             n = rx.recv() => { assert_eq!(n.unwrap(), 1); }
         }
     }
@@ -760,7 +763,7 @@ mod tests {
             for _ in 0..100 { thread::yield_now() }
             tx.send(1).unwrap();
         });
-        select! {
+        parking_lot_mpsc_select! {
             n = rx.recv() => { assert_eq!(n.unwrap(), 1); }
         }
     }
@@ -771,7 +774,7 @@ mod tests {
         let (tx2, rx2): (Sender<i32>, Receiver<i32>) = channel();
         let _t = thread::spawn(move|| { tx1.send(1).unwrap(); });
         let _t = thread::spawn(move|| { tx2.send(2).unwrap(); });
-        select! {
+        parking_lot_mpsc_select! {
             n = rx1.recv() => {
                 let n = n.unwrap();
                 assert_eq!(n, 1);
