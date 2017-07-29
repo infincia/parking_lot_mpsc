@@ -123,7 +123,6 @@
 //! rx.recv().unwrap();
 //! ```
 
-#![stable(feature = "rust1", since = "1.0.0")]
 
 // A description of how Rust's channel implementation works
 //
@@ -282,7 +281,6 @@ use mem;
 use cell::UnsafeCell;
 use time::{Duration, Instant};
 
-#[unstable(feature = "mpsc_select", issue = "27800")]
 pub use self::select::{Select, Handle};
 use self::select::StartResult;
 use self::select::StartResult::*;
@@ -325,17 +323,14 @@ mod spsc_queue;
 /// println!("Waiting...");
 /// println!("{}", recv.recv().unwrap()); // Received after 2 seconds
 /// ```
-#[stable(feature = "rust1", since = "1.0.0")]
 pub struct Receiver<T> {
     inner: UnsafeCell<Flavor<T>>,
 }
 
 // The receiver port can be sent from place to place, so long as it
 // is not used to receive non-sendable things.
-#[stable(feature = "rust1", since = "1.0.0")]
 unsafe impl<T: Send> Send for Receiver<T> { }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> !Sync for Receiver<T> { }
 
 /// An iterator over messages on a [`Receiver`], created by [`iter`].
@@ -367,7 +362,6 @@ impl<T> !Sync for Receiver<T> { }
 ///     println!("Got: {}", x);
 /// }
 /// ```
-#[stable(feature = "rust1", since = "1.0.0")]
 #[derive(Debug)]
 pub struct Iter<'a, T: 'a> {
     rx: &'a Receiver<T>
@@ -412,7 +406,6 @@ pub struct Iter<'a, T: 'a> {
 ///     println!("Got: {}", x);
 /// }
 /// ```
-#[stable(feature = "receiver_try_iter", since = "1.15.0")]
 #[derive(Debug)]
 pub struct TryIter<'a, T: 'a> {
     rx: &'a Receiver<T>
@@ -447,7 +440,6 @@ pub struct TryIter<'a, T: 'a> {
 ///     println!("Got: {}", x);
 /// }
 /// ```
-#[stable(feature = "receiver_into_iter", since = "1.1.0")]
 #[derive(Debug)]
 pub struct IntoIter<T> {
     rx: Receiver<T>
@@ -485,17 +477,14 @@ pub struct IntoIter<T> {
 ///
 /// assert_eq!(3, msg + msg2);
 /// ```
-#[stable(feature = "rust1", since = "1.0.0")]
 pub struct Sender<T> {
     inner: UnsafeCell<Flavor<T>>,
 }
 
 // The send port can be sent from place to place, so long as it
 // is not used to send non-sendable things.
-#[stable(feature = "rust1", since = "1.0.0")]
 unsafe impl<T: Send> Send for Sender<T> { }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> !Sync for Sender<T> { }
 
 /// The sending-half of Rust's synchronous [`sync_channel`] type.
@@ -545,12 +534,10 @@ impl<T> !Sync for Sender<T> { }
 ///
 /// println!("message {} received", msg);
 /// ```
-#[stable(feature = "rust1", since = "1.0.0")]
 pub struct SyncSender<T> {
     inner: Arc<sync::Packet<T>>,
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 unsafe impl<T: Send> Send for SyncSender<T> {}
 
 /// An error returned from the [`Sender::send`] or [`SyncSender::send`]
@@ -562,9 +549,8 @@ unsafe impl<T: Send> Send for SyncSender<T> {}
 ///
 /// [`Sender::send`]: struct.Sender.html#method.send
 /// [`SyncSender::send`]: struct.SyncSender.html#method.send
-#[stable(feature = "rust1", since = "1.0.0")]
 #[derive(PartialEq, Eq, Clone, Copy)]
-pub struct SendError<T>(#[stable(feature = "rust1", since = "1.0.0")] pub T);
+pub struct SendError<T>(pub T);
 
 /// An error returned from the [`recv`] function on a [`Receiver`].
 ///
@@ -577,7 +563,6 @@ pub struct SendError<T>(#[stable(feature = "rust1", since = "1.0.0")] pub T);
 /// [`channel`]: fn.channel.html
 /// [`sync_channel`]: fn.sync_channel.html
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
-#[stable(feature = "rust1", since = "1.0.0")]
 pub struct RecvError;
 
 /// This enumeration is the list of the possible reasons that [`try_recv`] could
@@ -588,16 +573,13 @@ pub struct RecvError;
 /// [`channel`]: fn.channel.html
 /// [`sync_channel`]: fn.sync_channel.html
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
-#[stable(feature = "rust1", since = "1.0.0")]
 pub enum TryRecvError {
     /// This **channel** is currently empty, but the **Sender**(s) have not yet
     /// disconnected, so data may yet become available.
-    #[stable(feature = "rust1", since = "1.0.0")]
     Empty,
 
     /// The **channel**'s sending half has become disconnected, and there will
     /// never be any more data received on it.
-    #[stable(feature = "rust1", since = "1.0.0")]
     Disconnected,
 }
 
@@ -609,15 +591,12 @@ pub enum TryRecvError {
 /// [`channel`]: fn.channel.html
 /// [`sync_channel`]: fn.sync_channel.html
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
-#[stable(feature = "mpsc_recv_timeout", since = "1.12.0")]
 pub enum RecvTimeoutError {
     /// This **channel** is currently empty, but the **Sender**(s) have not yet
     /// disconnected, so data may yet become available.
-    #[stable(feature = "mpsc_recv_timeout", since = "1.12.0")]
     Timeout,
     /// The **channel**'s sending half has become disconnected, and there will
     /// never be any more data received on it.
-    #[stable(feature = "mpsc_recv_timeout", since = "1.12.0")]
     Disconnected,
 }
 
@@ -625,7 +604,6 @@ pub enum RecvTimeoutError {
 /// [`try_send`] method.
 ///
 /// [`try_send`]: struct.SyncSender.html#method.try_send
-#[stable(feature = "rust1", since = "1.0.0")]
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub enum TrySendError<T> {
     /// The data could not be sent on the [`sync_channel`] because it would require that
@@ -637,15 +615,13 @@ pub enum TrySendError<T> {
     ///
     /// [`sync_channel`]: fn.sync_channel.html
     /// [`Receiver`]: struct.Receiver.html
-    #[stable(feature = "rust1", since = "1.0.0")]
-    Full(#[stable(feature = "rust1", since = "1.0.0")] T),
+    Full(T),
 
     /// This [`sync_channel`]'s receiving half has disconnected, so the data could not be
     /// sent. The data is returned back to the callee in this case.
     ///
     /// [`sync_channel`]: fn.sync_channel.html
-    #[stable(feature = "rust1", since = "1.0.0")]
-    Disconnected(#[stable(feature = "rust1", since = "1.0.0")] T),
+    Disconnected(T),
 }
 
 enum Flavor<T> {
@@ -718,7 +694,6 @@ impl<T> UnsafeFlavor<T> for Receiver<T> {
 /// // Let's see what that answer was
 /// println!("{:?}", receiver.recv().unwrap());
 /// ```
-#[stable(feature = "rust1", since = "1.0.0")]
 pub fn channel<T>() -> (Sender<T>, Receiver<T>) {
     let a = Arc::new(oneshot::Packet::new());
     (Sender::new(Flavor::Oneshot(a.clone())), Receiver::new(Flavor::Oneshot(a)))
@@ -771,7 +746,6 @@ pub fn channel<T>() -> (Sender<T>, Receiver<T>) {
 /// assert_eq!(receiver.recv().unwrap(), 1);
 /// assert_eq!(receiver.recv().unwrap(), 2);
 /// ```
-#[stable(feature = "rust1", since = "1.0.0")]
 pub fn sync_channel<T>(bound: usize) -> (SyncSender<T>, Receiver<T>) {
     let a = Arc::new(sync::Packet::new(bound));
     (SyncSender::new(a.clone()), Receiver::new(Flavor::Sync(a)))
@@ -818,7 +792,6 @@ impl<T> Sender<T> {
     /// drop(rx);
     /// assert_eq!(tx.send(1).unwrap_err().0, 1);
     /// ```
-    #[stable(feature = "rust1", since = "1.0.0")]
     pub fn send(&self, t: T) -> Result<(), SendError<T>> {
         let (new_inner, ret) = match *unsafe { self.inner() } {
             Flavor::Oneshot(ref p) => {
@@ -857,7 +830,6 @@ impl<T> Sender<T> {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> Clone for Sender<T> {
     fn clone(&self) -> Sender<T> {
         let packet = match *unsafe { self.inner() } {
@@ -904,7 +876,6 @@ impl<T> Clone for Sender<T> {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> Drop for Sender<T> {
     fn drop(&mut self) {
         match *unsafe { self.inner() } {
@@ -916,7 +887,6 @@ impl<T> Drop for Sender<T> {
     }
 }
 
-#[stable(feature = "mpsc_debug", since = "1.8.0")]
 impl<T> fmt::Debug for Sender<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Sender {{ .. }}")
@@ -971,7 +941,6 @@ impl<T> SyncSender<T> {
     /// let msg = receiver.recv().unwrap();
     /// assert_eq!(1, msg);
     /// ```
-    #[stable(feature = "rust1", since = "1.0.0")]
     pub fn send(&self, t: T) -> Result<(), SendError<T>> {
         self.inner.send(t).map_err(SendError)
     }
@@ -1025,13 +994,11 @@ impl<T> SyncSender<T> {
     ///     Err(_) => println!("the third message was never sent"),
     /// }
     /// ```
-    #[stable(feature = "rust1", since = "1.0.0")]
     pub fn try_send(&self, t: T) -> Result<(), TrySendError<T>> {
         self.inner.try_send(t)
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> Clone for SyncSender<T> {
     fn clone(&self) -> SyncSender<T> {
         self.inner.clone_chan();
@@ -1039,14 +1006,12 @@ impl<T> Clone for SyncSender<T> {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> Drop for SyncSender<T> {
     fn drop(&mut self) {
         self.inner.drop_chan();
     }
 }
 
-#[stable(feature = "mpsc_debug", since = "1.8.0")]
 impl<T> fmt::Debug for SyncSender<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "SyncSender {{ .. }}")
@@ -1085,7 +1050,6 @@ impl<T> Receiver<T> {
     ///
     /// assert!(receiver.try_recv().is_err());
     /// ```
-    #[stable(feature = "rust1", since = "1.0.0")]
     pub fn try_recv(&self) -> Result<T, TryRecvError> {
         loop {
             let new_port = match *unsafe { self.inner() } {
@@ -1192,7 +1156,6 @@ impl<T> Receiver<T> {
     /// assert_eq!(Ok(3), recv.recv());
     /// assert_eq!(Err(RecvError), recv.recv());
     /// ```
-    #[stable(feature = "rust1", since = "1.0.0")]
     pub fn recv(&self) -> Result<T, RecvError> {
         loop {
             let new_port = match *unsafe { self.inner() } {
@@ -1285,7 +1248,6 @@ impl<T> Receiver<T> {
     ///     Err(mpsc::RecvTimeoutError::Timeout)
     /// );
     /// ```
-    #[stable(feature = "mpsc_recv_timeout", since = "1.12.0")]
     pub fn recv_timeout(&self, timeout: Duration) -> Result<T, RecvTimeoutError> {
         // Do an optimistic try_recv to avoid the performance impact of
         // Instant::now() in the full-channel case.
@@ -1376,7 +1338,6 @@ impl<T> Receiver<T> {
     /// assert_eq!(iter.next(), Some(3));
     /// assert_eq!(iter.next(), None);
     /// ```
-    #[stable(feature = "rust1", since = "1.0.0")]
     pub fn iter(&self) -> Iter<T> {
         Iter { rx: self }
     }
@@ -1419,7 +1380,6 @@ impl<T> Receiver<T> {
     /// assert_eq!(iter.next(), Some(3));
     /// assert_eq!(iter.next(), None);
     /// ```
-    #[stable(feature = "receiver_try_iter", since = "1.15.0")]
     pub fn try_iter(&self) -> TryIter<T> {
         TryIter { rx: self }
     }
@@ -1498,21 +1458,18 @@ impl<T> select::Packet for Receiver<T> {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<'a, T> Iterator for Iter<'a, T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> { self.rx.recv().ok() }
 }
 
-#[stable(feature = "receiver_try_iter", since = "1.15.0")]
 impl<'a, T> Iterator for TryIter<'a, T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> { self.rx.try_recv().ok() }
 }
 
-#[stable(feature = "receiver_into_iter", since = "1.1.0")]
 impl<'a, T> IntoIterator for &'a Receiver<T> {
     type Item = T;
     type IntoIter = Iter<'a, T>;
@@ -1520,13 +1477,11 @@ impl<'a, T> IntoIterator for &'a Receiver<T> {
     fn into_iter(self) -> Iter<'a, T> { self.iter() }
 }
 
-#[stable(feature = "receiver_into_iter", since = "1.1.0")]
 impl<T> Iterator for IntoIter<T> {
     type Item = T;
     fn next(&mut self) -> Option<T> { self.rx.recv().ok() }
 }
 
-#[stable(feature = "receiver_into_iter", since = "1.1.0")]
 impl <T> IntoIterator for Receiver<T> {
     type Item = T;
     type IntoIter = IntoIter<T>;
@@ -1536,7 +1491,6 @@ impl <T> IntoIterator for Receiver<T> {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> Drop for Receiver<T> {
     fn drop(&mut self) {
         match *unsafe { self.inner() } {
@@ -1548,28 +1502,24 @@ impl<T> Drop for Receiver<T> {
     }
 }
 
-#[stable(feature = "mpsc_debug", since = "1.8.0")]
 impl<T> fmt::Debug for Receiver<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Receiver {{ .. }}")
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> fmt::Debug for SendError<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         "SendError(..)".fmt(f)
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> fmt::Display for SendError<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         "sending on a closed channel".fmt(f)
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T: Send> error::Error for SendError<T> {
     fn description(&self) -> &str {
         "sending on a closed channel"
@@ -1580,7 +1530,6 @@ impl<T: Send> error::Error for SendError<T> {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> fmt::Debug for TrySendError<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -1590,7 +1539,6 @@ impl<T> fmt::Debug for TrySendError<T> {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T> fmt::Display for TrySendError<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -1604,7 +1552,6 @@ impl<T> fmt::Display for TrySendError<T> {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl<T: Send> error::Error for TrySendError<T> {
 
     fn description(&self) -> &str {
@@ -1623,14 +1570,12 @@ impl<T: Send> error::Error for TrySendError<T> {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl fmt::Display for RecvError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         "receiving on a closed channel".fmt(f)
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl error::Error for RecvError {
 
     fn description(&self) -> &str {
@@ -1642,7 +1587,6 @@ impl error::Error for RecvError {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl fmt::Display for TryRecvError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -1656,7 +1600,6 @@ impl fmt::Display for TryRecvError {
     }
 }
 
-#[stable(feature = "rust1", since = "1.0.0")]
 impl error::Error for TryRecvError {
 
     fn description(&self) -> &str {
@@ -1675,7 +1618,6 @@ impl error::Error for TryRecvError {
     }
 }
 
-#[stable(feature = "mpsc_recv_timeout_error", since = "1.15.0")]
 impl fmt::Display for RecvTimeoutError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -1689,7 +1631,6 @@ impl fmt::Display for RecvTimeoutError {
     }
 }
 
-#[stable(feature = "mpsc_recv_timeout_error", since = "1.15.0")]
 impl error::Error for RecvTimeoutError {
     fn description(&self) -> &str {
         match *self {

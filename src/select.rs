@@ -48,15 +48,6 @@
 //! ```
 
 #![allow(dead_code)]
-#![unstable(feature = "mpsc_select",
-            reason = "This implementation, while likely sufficient, is unsafe and \
-                      likely to be error prone. At some point in the future this \
-                      module will likely be replaced, and it is currently \
-                      unknown how much API breakage that will cause. The ability \
-                      to select over a number of channels will remain forever, \
-                      but no guarantees beyond this are being made",
-            issue = "27800")]
-
 
 use fmt;
 
