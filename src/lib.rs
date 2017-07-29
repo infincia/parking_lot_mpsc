@@ -64,7 +64,7 @@
 //!
 //! ```
 //! use std::thread;
-//! use std::sync::mpsc::channel;
+//! use parking_lot_mpsc::channel;
 //!
 //! // Create a simple streaming channel
 //! let (tx, rx) = channel();
@@ -78,7 +78,7 @@
 //!
 //! ```
 //! use std::thread;
-//! use std::sync::mpsc::channel;
+//! use parking_lot_mpsc::channel;
 //!
 //! // Create a shared channel that can be sent along from many threads
 //! // where tx is the sending half (tx for transmission), and rx is the receiving
@@ -100,7 +100,7 @@
 //! Propagating panics:
 //!
 //! ```
-//! use std::sync::mpsc::channel;
+//! use parking_lot_mpsc::channel;
 //!
 //! // The call to recv() will return an error because the channel has already
 //! // hung up (or been deallocated)
@@ -113,7 +113,7 @@
 //!
 //! ```
 //! use std::thread;
-//! use std::sync::mpsc::sync_channel;
+//! use parking_lot_mpsc::sync_channel;
 //!
 //! let (tx, rx) = sync_channel::<i32>(0);
 //! thread::spawn(move|| {
@@ -309,7 +309,7 @@ mod spsc_queue;
 /// # Examples
 ///
 /// ```rust
-/// use std::sync::mpsc::channel;
+/// use parking_lot_mpsc::channel;
 /// use std::thread;
 /// use std::time::Duration;
 ///
@@ -349,7 +349,7 @@ unsafe impl<T: Send> Send for Receiver<T> { }
 /// # Examples
 ///
 /// ```rust
-/// use std::sync::mpsc::channel;
+/// use parking_lot_mpsc::channel;
 /// use std::thread;
 ///
 /// let (send, recv) = channel();
@@ -385,7 +385,7 @@ pub struct Iter<'a, T: 'a> {
 /// # Examples
 ///
 /// ```rust
-/// use std::sync::mpsc::channel;
+/// use parking_lot_mpsc::channel;
 /// use std::thread;
 /// use std::time::Duration;
 ///
@@ -427,7 +427,7 @@ pub struct TryIter<'a, T: 'a> {
 /// # Examples
 ///
 /// ```rust
-/// use std::sync::mpsc::channel;
+/// use parking_lot_mpsc::channel;
 /// use std::thread;
 ///
 /// let (send, recv) = channel();
@@ -458,7 +458,7 @@ pub struct IntoIter<T> {
 /// # Examples
 ///
 /// ```rust
-/// use std::sync::mpsc::channel;
+/// use parking_lot_mpsc::channel;
 /// use std::thread;
 ///
 /// let (sender, receiver) = channel();
@@ -502,7 +502,7 @@ unsafe impl<T: Send> Send for Sender<T> { }
 /// # Examples
 ///
 /// ```rust
-/// use std::sync::mpsc::sync_channel;
+/// use parking_lot_mpsc::sync_channel;
 /// use std::thread;
 ///
 /// // Create a sync_channel with buffer size 2
@@ -680,7 +680,7 @@ impl<T> UnsafeFlavor<T> for Receiver<T> {
 /// # Examples
 ///
 /// ```
-/// use std::sync::mpsc::channel;
+/// use parking_lot_mpsc::channel;
 /// use std::thread;
 ///
 /// let (sender, receiver) = channel();
@@ -732,7 +732,7 @@ pub fn channel<T>() -> (Sender<T>, Receiver<T>) {
 /// # Examples
 ///
 /// ```
-/// use std::sync::mpsc::sync_channel;
+/// use parking_lot_mpsc::sync_channel;
 /// use std::thread;
 ///
 /// let (sender, receiver) = sync_channel(1);
@@ -783,7 +783,7 @@ impl<T> Sender<T> {
     /// # Examples
     ///
     /// ```
-    /// use std::sync::mpsc::channel;
+    /// use parking_lot_mpsc::channel;
     ///
     /// let (tx, rx) = channel();
     ///
@@ -926,7 +926,7 @@ impl<T> SyncSender<T> {
     /// # Examples
     ///
     /// ```rust
-    /// use std::sync::mpsc::sync_channel;
+    /// use parking_lot_mpsc::sync_channel;
     /// use std::thread;
     ///
     /// // Create a rendezvous sync_channel with buffer size 0
@@ -962,7 +962,7 @@ impl<T> SyncSender<T> {
     /// # Examples
     ///
     /// ```rust
-    /// use std::sync::mpsc::sync_channel;
+    /// use parking_lot_mpsc::sync_channel;
     /// use std::thread;
     ///
     /// // Create a sync_channel with buffer size 1
@@ -1046,7 +1046,7 @@ impl<T> Receiver<T> {
     /// # Examples
     ///
     /// ```rust
-    /// use std::sync::mpsc::{Receiver, channel};
+    /// use parking_lot_mpsc::{Receiver, channel};
     ///
     /// let (_, receiver): (_, Receiver<i32>) = channel();
     ///
@@ -1122,7 +1122,7 @@ impl<T> Receiver<T> {
     /// # Examples
     ///
     /// ```
-    /// use std::sync::mpsc;
+    /// use parking_lot_mpsc as mpsc;
     /// use std::thread;
     ///
     /// let (send, recv) = mpsc::channel();
@@ -1138,9 +1138,9 @@ impl<T> Receiver<T> {
     /// Buffering behavior:
     ///
     /// ```
-    /// use std::sync::mpsc;
+    /// use parking_lot_mpsc as mpsc;
     /// use std::thread;
-    /// use std::sync::mpsc::RecvError;
+    /// use parking_lot_mpsc::RecvError;
     ///
     /// let (send, recv) = mpsc::channel();
     /// let handle = thread::spawn(move || {
@@ -1217,7 +1217,7 @@ impl<T> Receiver<T> {
     /// ```no_run
     /// use std::thread;
     /// use std::time::Duration;
-    /// use std::sync::mpsc;
+    /// use parking_lot_mpsc as mpsc;
     ///
     /// let (send, recv) = mpsc::channel();
     ///
@@ -1236,7 +1236,7 @@ impl<T> Receiver<T> {
     /// ```no_run
     /// use std::thread;
     /// use std::time::Duration;
-    /// use std::sync::mpsc;
+    /// use parking_lot_mpsc as mpsc;
     ///
     /// let (send, recv) = mpsc::channel();
     ///
@@ -1323,7 +1323,7 @@ impl<T> Receiver<T> {
     /// # Examples
     ///
     /// ```rust
-    /// use std::sync::mpsc::channel;
+    /// use parking_lot_mpsc::channel;
     /// use std::thread;
     ///
     /// let (send, recv) = channel();
@@ -1354,7 +1354,7 @@ impl<T> Receiver<T> {
     /// # Examples
     ///
     /// ```no_run
-    /// use std::sync::mpsc::channel;
+    /// use parking_lot_mpsc::channel;
     /// use std::thread;
     /// use std::time::Duration;
     ///

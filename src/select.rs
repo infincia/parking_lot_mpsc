@@ -29,7 +29,7 @@
 //! ```rust
 //! #![feature(mpsc_select)]
 //!
-//! use std::sync::mpsc::channel;
+//! use parking_lot_mpsc::channel;
 //!
 //! let (tx1, rx1) = channel();
 //! let (tx2, rx2) = channel();
@@ -118,7 +118,7 @@ impl Select {
     /// ```
     /// #![feature(mpsc_select)]
     ///
-    /// use std::sync::mpsc::Select;
+    /// use parking_lot_mpsc::Select;
     ///
     /// let select = Select::new();
     /// ```
