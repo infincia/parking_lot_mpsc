@@ -20,17 +20,16 @@
 
 pub use self::Failure::*;
 
-
-use cell::UnsafeCell;
-use ptr;
-use sync::atomic::{AtomicUsize, AtomicIsize, AtomicBool, Ordering};
-use sync::mpsc::blocking::{self, SignalToken};
-use sync::mpsc::mpsc_queue as mpsc;
-use sync::mpsc::select::StartResult::*;
-use sync::mpsc::select::StartResult;
+use std::cell::UnsafeCell;
+use std::ptr;
+use std::sync::atomic::{AtomicUsize, AtomicIsize, AtomicBool, Ordering};
+use ::blocking::{self, SignalToken};
+use ::mpsc_queue as mpsc;
+use ::select::StartResult::*;
+use ::select::StartResult;
 use ::parking_lot::{Mutex, MutexGuard};
-use thread;
-use time::Instant;
+use std::thread;
+use std::time::Instant;
 use std::cmp;
 use std::isize;
 

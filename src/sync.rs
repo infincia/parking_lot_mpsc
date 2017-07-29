@@ -40,11 +40,11 @@ use std::isize;
 use std::mem;
 use std::ptr;
 
-use sync::atomic::{Ordering, AtomicUsize};
-use sync::mpsc::blocking::{self, WaitToken, SignalToken};
-use sync::mpsc::select::StartResult::{self, Installed, Abort};
+use std::sync::atomic::{Ordering, AtomicUsize};
+use ::blocking::{self, WaitToken, SignalToken};
+use ::select::StartResult::{self, Installed, Abort};
 use ::parking_lot::{Mutex, MutexGuard};
-use time::Instant;
+use std::time::Instant;
 
 const MAX_REFCOUNT: usize = (isize::MAX) as usize;
 

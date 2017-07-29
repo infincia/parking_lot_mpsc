@@ -274,12 +274,13 @@
 // And now that you've seen all the races that I found and attempted to fix,
 // here's the code for you to find some more!
 
-use sync::Arc;
-use error;
-use fmt;
-use mem;
-use cell::UnsafeCell;
-use time::{Duration, Instant};
+use std::sync::Arc;
+use std::error;
+use std::fmt;
+use std::mem;
+use std::cell::UnsafeCell;
+use std::time::{Duration, Instant};
+
 extern crate parking_lot;
 
 pub use self::select::{Select, Handle};

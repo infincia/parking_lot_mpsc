@@ -26,7 +26,7 @@ pub use self::PopResult::*;
 use std::ptr;
 use std::cell::UnsafeCell;
 
-use sync::atomic::{AtomicPtr, Ordering};
+use std::sync::atomic::{AtomicPtr, Ordering};
 
 /// A result of the `pop` function.
 pub enum PopResult<T> {
@@ -130,10 +130,10 @@ impl<T> Drop for Queue<T> {
 
 #[cfg(all(test, not(target_os = "emscripten")))]
 mod tests {
-    use sync::mpsc::channel;
+    use ::channel;
     use super::{Queue, Data, Empty, Inconsistent};
-    use sync::Arc;
-    use thread;
+    use std::sync::Arc;
+    use std::thread;
 
     #[test]
     fn test_full() {

@@ -22,15 +22,15 @@ pub use self::UpgradeResult::*;
 pub use self::SelectionResult::*;
 use self::Message::*;
 
-use cell::UnsafeCell;
-use ptr;
-use thread;
-use time::Instant;
+use std::cell::UnsafeCell;
+use std::ptr;
+use std::thread;
+use std::time::Instant;
 
-use sync::atomic::{AtomicIsize, AtomicUsize, Ordering, AtomicBool};
-use sync::mpsc::Receiver;
-use sync::mpsc::blocking::{self, SignalToken};
-use sync::mpsc::spsc_queue as spsc;
+use std::sync::atomic::{AtomicIsize, AtomicUsize, Ordering, AtomicBool};
+use ::Receiver;
+use ::blocking::{self, SignalToken};
+use ::spsc_queue as spsc;
 use std::cmp;
 use std::isize;
 

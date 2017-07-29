@@ -56,8 +56,8 @@ use std::marker;
 use std::ptr;
 use std::usize;
 
-use sync::mpsc::{Receiver, RecvError};
-use sync::mpsc::blocking::{self, SignalToken};
+use ::{Receiver, RecvError};
+use ::blocking::{self, SignalToken};
 
 /// The "receiver set" of the select interface. This structure is used to manage
 /// a set of receivers which are being selected over.
@@ -358,8 +358,8 @@ impl<'rx, T:Send+'rx> fmt::Debug for Handle<'rx, T> {
 #[allow(unused_imports)]
 #[cfg(all(test, not(target_os = "emscripten")))]
 mod tests {
-    use thread;
-    use sync::mpsc::*;
+    use std::thread;
+    use ::{Select,channel,sync_channel,Sender,Receiver,TryRecvError};
 
     // Don't use the libstd version so we can pull in the right Select structure
     // (std::comm points at the wrong one)

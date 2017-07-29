@@ -19,7 +19,7 @@
 use std::ptr;
 use std::cell::UnsafeCell;
 
-use sync::atomic::{AtomicPtr, AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicPtr, AtomicUsize, Ordering};
 
 // Node within the linked list queue of messages to send
 struct Node<T> {
@@ -215,10 +215,10 @@ impl<T> Drop for Queue<T> {
 
 #[cfg(all(test, not(target_os = "emscripten")))]
 mod tests {
-    use sync::Arc;
+    use std::sync::Arc;
     use super::Queue;
-    use thread;
-    use sync::mpsc::channel;
+    use std::thread;
+    use ::channel;
 
     #[test]
     fn smoke() {
