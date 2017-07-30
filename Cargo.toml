@@ -7,4 +7,4 @@ authors = ["Stephen Oliver <steve@infincia.com>"]
 travis-ci = { repository = "infincia/parking_lot_mpsc" }
 
 [dependencies]
-parking_lot = "0.2.8"
+parking_lot = "0.4.0"
