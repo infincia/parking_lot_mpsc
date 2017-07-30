@@ -17,9 +17,11 @@ use std::marker::{Sync, Send};
 use std::mem;
 use std::time::Instant;
 
+use parking_lot::{Mutex, Condvar};
+
 struct Inner {
-    thread: Thread,
-    woken: AtomicBool,
+    woken: Mutex<bool>,
+    cvar: Condvar,
 }
 
 unsafe impl Send for Inner {}
@@ -40,8 +42,8 @@ pub struct WaitToken {
 
 pub fn tokens() -> (WaitToken, SignalToken) {
     let inner = Arc::new(Inner {
-        thread: thread::current(),
-        woken: AtomicBool::new(false),
+        woken: Mutex::new(false),
+        cvar: Condvar::new(),
     });
     let wait_token = WaitToken {
         inner: inner.clone(),
@@ -54,11 +56,13 @@ pub fn tokens() -> (WaitToken, SignalToken) {
 
 impl SignalToken {
     pub fn signal(&self) -> bool {
-        let wake = !self.inner.woken.compare_and_swap(false, true, Ordering::SeqCst);
-        if wake {
-            self.inner.thread.unpark();
-        }
-        wake
+        let ref lock = self.inner.woken;
+        let mut started = lock.lock();
+        *started = true;
+
+        self.inner.cvar.notify_one();
+
+        true
     }
 
     /// Convert to an unsafe usize value. Useful for storing in a pipe's state
@@ -78,20 +82,24 @@ impl SignalToken {
 
 impl WaitToken {
     pub fn wait(self) {
-        while !self.inner.woken.load(Ordering::SeqCst) {
-            thread::park()
+        let ref lock = self.inner.woken;
+        let mut started = lock.lock();
+        while !*started {
+            self.inner.cvar.wait(&mut started);
         }
     }
 
     /// Returns true if we wake up normally, false otherwise.
     pub fn wait_max_until(self, end: Instant) -> bool {
-        while !self.inner.woken.load(Ordering::SeqCst) {
-            let now = Instant::now();
-            if now >= end {
-                return false;
-            }
-            thread::park_timeout(end - now)
+        let ref lock = self.inner.woken;
+        let mut started = lock.lock();
+
+        let res = self.inner.cvar.wait_until(&mut started, end);
+
+        if res.timed_out() {
+            return false;
         }
+
         true
     }
 }
