@@ -72,6 +72,7 @@ macro_rules! parking_lot_mpsc_select {
 use fmt;
 
 use std::cell::{Cell, UnsafeCell};
+#[allow(unused_imports)]
 use std::marker;
 use std::ptr;
 use std::usize;
