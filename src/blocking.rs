@@ -10,8 +10,6 @@
 
 //! Generic support for building blocking abstractions.
 
-use std::thread::{self, Thread};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::marker::{Sync, Send};
 use std::mem;
