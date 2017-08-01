@@ -12,6 +12,8 @@
 
 use std::sync::Arc;
 use std::marker::{Sync, Send};
+use std::marker::PhantomData;
+
 use std::mem;
 use std::time::Instant;
 
@@ -32,6 +34,7 @@ pub struct SignalToken {
 
 pub struct WaitToken {
     inner: Arc<Inner>,
+    not_send_sync: PhantomData<*const ()>
 }
 
 //impl !Send for WaitToken {}
@@ -45,6 +48,7 @@ pub fn tokens() -> (WaitToken, SignalToken) {
     });
     let wait_token = WaitToken {
         inner: inner.clone(),
+        not_send_sync: PhantomData,
     };
     let signal_token = SignalToken {
         inner: inner

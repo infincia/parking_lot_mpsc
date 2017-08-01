@@ -280,6 +280,8 @@ use std::fmt;
 use std::mem;
 use std::cell::UnsafeCell;
 use std::time::{Duration, Instant};
+use std::marker::PhantomData;
+
 
 extern crate parking_lot;
 
@@ -327,6 +329,7 @@ mod spsc_queue;
 /// ```
 pub struct Receiver<T> {
     inner: UnsafeCell<Flavor<T>>,
+    not_send_sync: PhantomData<*const ()>,
 }
 
 // The receiver port can be sent from place to place, so long as it
@@ -481,6 +484,7 @@ pub struct IntoIter<T> {
 /// ```
 pub struct Sender<T> {
     inner: UnsafeCell<Flavor<T>>,
+    not_send_sync: PhantomData<*const ()>,
 }
 
 // The send port can be sent from place to place, so long as it
@@ -761,6 +765,7 @@ impl<T> Sender<T> {
     fn new(inner: Flavor<T>) -> Sender<T> {
         Sender {
             inner: UnsafeCell::new(inner),
+            not_send_sync: PhantomData,
         }
     }
 
@@ -1026,7 +1031,10 @@ impl<T> fmt::Debug for SyncSender<T> {
 
 impl<T> Receiver<T> {
     fn new(inner: Flavor<T>) -> Receiver<T> {
-        Receiver { inner: UnsafeCell::new(inner) }
+        Receiver {
+            inner: UnsafeCell::new(inner),
+            not_send_sync: PhantomData,
+        }
     }
 
     /// Attempts to return a pending value on this receiver without blocking.
