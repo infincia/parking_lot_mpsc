@@ -1,6 +1,6 @@
 [package]
 name = "parking_lot_mpsc"
-version = "0.1.5-alpha.1"
+version = "0.1.5"
 authors = ["Stephen Oliver <steve@infincia.com>"]
 description = "A port of the Rust std::sync::mpsc module, using the parking_lot concurrency types rather than those in the standard library."
 license = "Apache-2.0/MIT"
